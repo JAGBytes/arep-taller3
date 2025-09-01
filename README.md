@@ -69,7 +69,7 @@ Este proyecto implementa un **framework web completo en Java** que evoluciona de
 
 ---
 
-## Requisitos Previos
+## 📋 Requisitos Previos
 
 - **Java 21** [Descargar Java](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
 - **Apache Maven 3.8+** [Instalar Maven](https://maven.apache.org/install.html)
@@ -77,7 +77,7 @@ Este proyecto implementa un **framework web completo en Java** que evoluciona de
 
 ---
 
-## Instalación y Ejecución
+## 🛠️ Instalación y Ejecución
 
 ### Pasos para ejecutar el proyecto:
 
@@ -91,19 +91,33 @@ Este proyecto implementa un **framework web completo en Java** que evoluciona de
 2. **Compilar el proyecto:**
 
    ```bash
-   mvn clean package
+   mvn clean compile
    ```
 
 3. **Ejecutar el servidor:**
 
    ```bash
-   java -jar target/arep-taller3-1.0-SNAPSHOT.jar
+   java -cp target/classes edu.escuelaing.arem.ASE.app.App
    ```
 
 4. **Acceder a la aplicación:**
    ```
    http://localhost:35000
    ```
+
+### Alternativas de ejecución:
+
+**Usando Maven Exec Plugin:**
+
+```bash
+mvn exec:java -Dexec.mainClass="edu.escuelaing.arem.ASE.app.App"
+```
+
+**Ejecutar tests:**
+
+```bash
+mvn test
+```
 
 ---
 
@@ -288,13 +302,25 @@ void testMultipleControllers() throws Exception {
 }
 ```
 
-#### **Servicios con Anotaciones:**
+### **Cobertura de Tests:**
+
+-  Tests de endpoints con anotaciones
+-  Tests de parámetros de consulta
+-  Tests de controladores múltiples
+-  Tests de manejo de errores
+-  Tests de carga automática de componentes
+
+---
+
+## 🌐 Endpoints Disponibles
+
+### **Servicios con Anotaciones:**
 
 - `GET /greeting` → Saludo básico
 - `GET /hello?name=X` → Saludo personalizado
 - `GET /add?a=X&b=Y` → Suma de dos números
 
-#### **Servicios Legacy (compatibilidad):**
+### **Servicios Legacy (compatibilidad):**
 
 - `GET /pi` → Constante matemática PI
 - `GET /e` → Número de Euler
@@ -305,12 +331,7 @@ void testMultipleControllers() throws Exception {
 - `GET /` → `index.html`
 - `GET /styles.css` → Archivos CSS
 - `GET /scripts.js` → Archivos JavaScript
-
-#### **Seguridad**
-
-- Protección contra path traversal
-- Validación de URL encoding
-- Manejo de errores de reflexión
+- `GET /servicio-web.jpg` → Imagen del proyecto
 
 ---
 
@@ -347,6 +368,10 @@ curl "http://localhost:35000/pi"
 curl "http://localhost:35000/e"
 # Respuesta: 2.718281828459045
 
+# Verificar usuario registrado
+curl "http://localhost:35000/app/hello?name=Juan"
+# Respuesta: {"message": "No estás registrado en el sistema."}
+
 # Registrar usuario
 curl -X POST -H "Content-Type: application/json" \
      -d '{"name":"NuevoUsuario"}' \
@@ -368,11 +393,11 @@ arep-taller3/
 │   │   │   ├── HttpServer.java         # Servidor con reflexión
 │   │   │   ├── Request.java            # Manejo de peticiones
 │   │   │   └── Response.java           # Constructor de respuestas
-│   │   ├── annotation/                 # 🆕 Sistema de anotaciones
+│   │   ├── annotation/                 # Sistema de anotaciones
 │   │   │   ├── GetMapping.java         # Anotación para GET
 │   │   │   ├── RequestParam.java       # Anotación para parámetros
 │   │   │   └── RestController.java     # Anotación para controladores
-│   │   └── Controller/                 # 🆕 Controladores con anotaciones
+│   │   └── Controller/                 # Controladores con anotaciones
 │   │       ├── GreetingController.java # Controlador de saludos
 │   │       └── MathController.java     # Controlador matemático
 │   │
@@ -384,8 +409,8 @@ arep-taller3/
 │
 ├── src/test/java/edu/escuelaing/arem/ASE/app/
 │   ├── HttpServerTest.java             # Tests del servidor HTTP
-│   └── ControllerLoadingTest.java      # 🆕 Tests de anotaciones y reflexión
-│
+│   └── ControllerLoadingTest.java      #  Tests de anotaciones y reflexión
+
 ├── target/classes/                     # Archivos compilados
 ├── pom.xml                            # Configuración Maven con nuevas dependencias
 ├── README.md                          # Documentación actualizada
@@ -398,7 +423,7 @@ arep-taller3/
 
 ### **Sistema de Reflexión Implementado:**
 
-- **Reflections library**: Escaneo automático del classpath
+
 - **Runtime annotation processing**: Procesamiento de anotaciones en tiempo de ejecución
 - **Method invocation**: Invocación dinámica de métodos
 - **Parameter extraction**: Extracción automática de parámetros
@@ -408,41 +433,33 @@ arep-taller3/
 - Headers completos (Content-Type, Content-Length)
 - Status codes apropiados (200, 400, 404, 500)
 - Métodos GET y POST
-- JSON parsing
+- JSON parsing y generación
 
-### **Seguridad:**
 
-- Path traversal protection
-- Input validation
-- Canonical path verification
-- Content-Type validation
-- Reflection security handling
 
-### **Dependencias Nuevas:**
+---
 
-```xml
-<!-- Reflections para scanning de clases -->
-<dependency>
-    <groupId>org.reflections</groupId>
-    <artifactId>reflections</artifactId>
-    <version>0.10.2</version>
-</dependency>
+## 🎯 Funcionalidades Destacadas
 
-<!-- JUnit 5 para testing -->
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.2</version>
-    <scope>test</scope>
-</dependency>
+### **1. Sistema de Anotaciones Personalizado**
 
-<!-- Maven Shade Plugin para JARs ejecutables -->
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-shade-plugin</artifactId>
-    <version>3.5.0</version>
-</plugin>
-```
+- Anotaciones tipo Spring Framework
+- Procesamiento en tiempo de ejecución
+- Inyección automática de parámetros
+
+### **2. Carga Automática de Componentes**
+
+- Descubrimiento automático de controladores
+- Registro automático de endpoints
+- Inicialización sin configuración manual
+
+### **3. Testing Completo**
+
+- Tests de integración
+- Tests de reflexión
+- Validación de funcionalidades
+
+
 
 ---
 

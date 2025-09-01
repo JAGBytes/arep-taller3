@@ -36,6 +36,7 @@ class SimpleControllerTest {
         byte[] response = HttpServer.handleGetRequest(testUri);
 
         String responseStr = new String(response);
+        System.out.println(responseStr);
         assertTrue(responseStr.contains("200 OK"));
         assertTrue(responseStr.contains("Hola Mundo!"));
     }

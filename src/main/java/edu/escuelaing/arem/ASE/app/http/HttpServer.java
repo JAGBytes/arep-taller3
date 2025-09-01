@@ -15,10 +15,14 @@ import java.lang.reflect.Parameter;
 import java.nio.file.Files;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.reflections.Reflections;
@@ -74,12 +78,10 @@ public class HttpServer {
 
     public static void loadComponents(String args[]) {
         try {
-            Reflections reflections = new Reflections("edu.escuelaing.arem.ASE.app");
-
             // Buscar todas las clases anotadas con @RestController
-            Set<Class<?>> controllers = reflections.getTypesAnnotatedWith(RestController.class);
-            
-            for(Class<?> c : controllers){
+            Set<Class<?>> controllers = findRestControllers("edu.escuelaing.arem.ASE.app");
+
+            for (Class<?> c : controllers) {
                 System.out.println("clase controller: " + c.getName());
                 Method[] methods = c.getDeclaredMethods();
                 for (Method m : methods) {
@@ -445,5 +447,101 @@ public class HttpServer {
 
     public Map<String, BiFunction<Request, Response, Response>> getPostServices() {
         return postServices;
+    }
+
+
+
+    /**
+     * Busca todas las clases con @RestController dentro de un paquete.
+     * @param packageName
+     * @return 
+     */
+    public static Set<Class<?>> findRestControllers(String packageName) {
+        Set<Class<?>> controllers = new HashSet<>();
+        String path = packageName.replace('.', '/');
+        try {
+            // Usa el classloader de contexto para incluir target/classes y target/test-classes
+            Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(path);
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+
+                if ("file".equals(resource.getProtocol())) {
+                    // Caso: target/classes (desarrollo y pruebas)
+                    File directory = new File(resource.toURI());
+                    findControllersInDirectory(directory, packageName, controllers);
+                } else if ("jar".equals(resource.getProtocol())) {
+                    // Caso: archivo JAR (producción)
+                    findControllersInJar(resource, path, controllers);
+                }
+            }
+        } catch (IOException | URISyntaxException e) {
+            System.err.println("Error buscando controladores: " + e.getMessage());
+        }
+        return controllers;
+    }
+
+    /**
+     * Busca clases en un directorio y sus subdirectorios, registrando las que
+     * tengan @RestController.
+     */
+    private static void findControllersInDirectory(File directory, String packageName, Set<Class<?>> controllers) {
+        if (directory == null || !directory.exists() || !directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                // Recursivo en subdirectorios
+                findControllersInDirectory(file, packageName + "." + file.getName(), controllers);
+            } else if (file.getName().endsWith(".class")) {
+                String className = packageName + "." + file.getName().replace(".class", "");
+                loadAndCheckClass(className, controllers);
+            }
+        }
+    }
+
+    /**
+     * Busca clases dentro de un archivo JAR.
+     */
+    private static void findControllersInJar(URL jarUrl, String packagePath, Set<Class<?>> controllers) {
+        String jarPath = jarUrl.getPath();
+        // Extraer la ruta del JAR (formato: file:/path/to/file.jar!/package/path)
+        int exclamationIndex = jarPath.indexOf("!");
+        if (exclamationIndex != -1) {
+            jarPath = jarPath.substring(5, exclamationIndex); // Quitar "file:" del inicio
+        }
+
+        try (JarFile jar = new JarFile(jarPath)) {
+            Enumeration<JarEntry> entries = jar.entries();
+
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String entryName = entry.getName();
+
+                if (entryName.startsWith(packagePath) && entryName.endsWith(".class") && !entry.isDirectory()) {
+                    String className = entryName.replace('/', '.').replace(".class", "");
+                    loadAndCheckClass(className, controllers);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error leyendo JAR: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Carga una clase y verifica si tiene @RestController.
+     */
+    private static void loadAndCheckClass(String className, Set<Class<?>> controllers) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            if (clazz.isAnnotationPresent(RestController.class)) {
+                controllers.add(clazz);
+            }
+        } catch (ClassNotFoundException e) {
+            // Ignora clases no cargables
+        }
     }
 }

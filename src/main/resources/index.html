@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>server</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <div class="app-intro">
+            <h1>App Web Server</h1>
+
+            <p>
+                Esta aplicación web usa formularios HTML con comunicación asíncrona hacia un servidor Java que procesa solicitudes REST y devuelve respuestas dinámicas.
+            </p>
+            <img src="servicio-web.jpg" alt="Logo de la App" class="app-image">
+        </div>
+
+        <section class="section">
+            <h2 class="section-title">Form with GET</h2>
+            <form id="getForm" class="form" onsubmit="event.preventDefault(); loadGetMsg();">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name" value="John" required><br><br>
+                <input type="button" value="Submit" onclick="loadGetMsg()">
+            </form>
+            <div id="getrespmsg"></div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Form with POST</h2>
+            <form id="postForm" class="form" onsubmit="event.preventDefault(); loadPostMsg();">
+                <label for="postname">Name:</label><br>
+                <input type="text" id="postname" name="name" value="John" required><br><br>
+                <input type="button" value="Submit" onclick="loadPostMsg()">
+            </form>
+            <div id="postrespmsg"></div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Consultar valores matemáticos</h2>
+            <button onclick="loadPiMsg()">Obtener PI</button>
+            <div id="pirespmsg"></div>
+
+            <button onclick="loadEMsg()">Obtener e</button>
+            <div id="erespmsg"></div>
+        </section>
+
+        <script src="/scripts.js"></script>
+    </body>
+</html>

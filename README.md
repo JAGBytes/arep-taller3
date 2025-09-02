@@ -2,7 +2,7 @@
 
 Este proyecto implementa un **framework web completo en Java** que evoluciona desde un servidor web básico hacia una plataforma robusta para el desarrollo de aplicaciones web con servicios REST backend. El framework ahora incluye **sistema de anotaciones**, **carga automática de componentes mediante reflexión**, y **arquitectura MVC moderna**.
 
-## 🆕 Nuevas Características Agregadas
+## Nuevas Características Agregadas
 
 ### **Sistema de Anotaciones Personalizado**
 
@@ -439,7 +439,7 @@ arep-taller3/
 
 ---
 
-## 🎯 Funcionalidades Destacadas
+## Funcionalidades Destacadas
 
 ### **1. Sistema de Anotaciones Personalizado**
 
